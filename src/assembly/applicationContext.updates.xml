@@ -1,0 +1,25 @@
+<processor>
+
+	<!-- 
+		make the changes you want here. You might also change other files like the web.xml
+		as for example shown in https://github.com/camunda-consulting/camunda-sso-weblogic for SSO 
+		on weblogic
+	 -->
+    <modify>
+    	<name>//spring:bean[@id="dataSource"]//spring:property[@name="driverClassName"]/@value</name>
+    	<value>org.h2.Driver</value>
+    </modify> 
+    <modify>
+    	<name>//spring:bean[@id="dataSource"]//spring:property[@name="url"]/@value</name>
+    	<value>jdbc:h2:mem:process-engine;MVCC=TRUE;TRACE_LEVEL_FILE=0;DB_CLOSE_ON_EXIT=FALSE</value>
+    </modify> 
+    <modify>
+    	<name>//spring:bean[@id="dataSource"]//spring:property[@name="username"]/@value</name>
+    	<value>sa</value>
+    </modify> 
+    <modify>
+    	<name>//spring:bean[@id="dataSource"]//spring:property[@name="password"]/@value</name>
+    	<value>sa</value>
+    </modify> 
+    
+</processor>

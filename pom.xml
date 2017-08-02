@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.camunda.consulting.demo</groupId>
+    <artifactId>camunda-standalone-webapp-configured</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+
+	<packaging>war</packaging>
+
+    <properties>
+	    <camunda.version>7.7.0</camunda.version>
+    	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>    	
+        <classes.dir>${build.directory}/extracted-camunda-webapp</classes.dir>
+    </properties>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>org.camunda.bpm.webapp</groupId>
+			<artifactId>camunda-webapp</artifactId>
+			<version>${camunda.version}</version>
+            <classifier>classes</classifier>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.camunda.bpm</groupId>
+			<artifactId>camunda-engine-rest</artifactId>
+			<classifier>classes</classifier>
+			<version>${camunda.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.camunda.bpm</groupId>
+			<artifactId>camunda-engine</artifactId>
+			<version>${camunda.version}</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.4</version>
+				<executions>
+					<execution>
+						<id>unpack-webxml</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>unpack</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>org.camunda.bpm.webapp</groupId>
+									<artifactId>camunda-webapp-tomcat-standalone</artifactId>
+									<version>${camunda.version}</version>
+									<type>war</type>
+									<overWrite>true</overWrite>
+									<outputDirectory>${classes.dir}</outputDirectory>
+									<includes>**</includes>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>com.google.code.maven-config-processor-plugin</groupId>
+				<artifactId>maven-config-processor-plugin</artifactId>
+				<version>2.0</version>
+				<executions>
+					<execution>
+						<id>process-webxml</id>
+						<goals>
+							<goal>process</goal>
+						</goals>
+						<configuration>
+							<namespaceContexts>
+								<spring>http://www.springframework.org/schema/beans</spring>
+							</namespaceContexts>
+							<outputDirectory>${classes.dir}</outputDirectory>
+							<transformations>
+								<transformation>
+									<input>${classes.dir}/WEB-INF/applicationContext.xml</input>
+									<output>WEB-INF/applicationContext.xml</output>
+									<config>src/assembly/applicationContext.updates.xml</config>
+								</transformation>
+							</transformations>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+
+				<configuration>
+                    <warName>${artifactId}-${camunda.version}</warName>
+          
+					<webResources>
+						<resource>
+							<directory>${classes.dir}</directory>
+							<includes>
+								<include>**</include>
+							</includes>
+						</resource>
+					</webResources>
+				</configuration>
+			</plugin>
+
+		</plugins>
+	</build>
+
+    <repositories>
+        <repository>
+            <id>camunda-bpm-nexus</id>
+            <name>camunda-bpm-nexus</name>
+            <url>hhttps://app.camunda.com/nexus/content/repositories/public/</url>
+        </repository>
+    </repositories>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+</project>
